@@ -105,6 +105,119 @@ if ($user == null) {
                 });
             }
         });
+
+        function newGPA() {
+            Swal.fire({
+                title: 'GPA Form',
+                html: `
+      <form id="gpaForm">
+        <label for="gpaName">GPA Name:</label>
+        <input type="text" id="gpaName" name="gpaName" required>
+        <br>
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" required>
+        <br>
+        <label for="gpaType">GPA System Type:</label>
+        <br>
+        <input type="radio" id="type5" name="gpaType" value="5" required>
+        <label for="type5">5.0</label>
+        <br>
+        <input type="radio" id="type4" name="gpaType" value="4" required>
+        <label for="type4">4.0</label>
+        <br>
+        <input type="radio" id="type100" name="gpaType" value="100" required>
+        <label for="type100">100</label>
+        <br>
+        <button type="button" id="nextBtn">Next</button>
+      </form>`,
+                showCancelButton: true,
+                showConfirmButton: false,
+                cancelButtonText: 'Close',
+                didOpen: () => {
+                    const gpaForm = document.getElementById('gpaForm');
+                    const nextBtn = document.getElementById('nextBtn');
+
+                    nextBtn.addEventListener('click', () => {
+                        const gpaName = document.getElementById('gpaName').value;
+                        const year = document.getElementById('year').value;
+                        const gpaType = document.querySelector('input[name="gpaType"]:checked').value;
+
+                        const displayHtml = `
+          <h3>GPA Name: ${gpaName}</h3>
+          <h4>Year: ${year}</h4>
+          <h4>GPA System Type: ${gpaType}</h4>
+          <button type="button" id="addSemesterBtn">Add Semester</button>
+        `;
+
+                        Swal.fire({
+                            title: 'GPA Form',
+                            html: displayHtml,
+                            showCancelButton: true,
+                            showConfirmButton: true,
+                            cancelButtonText: 'Close',
+                            didOpen: () => {
+                                const addSemesterBtn = document.getElementById('addSemesterBtn');
+                                const semesterContainer = document.createElement('div');
+                                semesterContainer.id = 'semesterContainer';
+                                Swal.getHtmlContainer().appendChild(semesterContainer);
+
+                                let semesterCount = 0;
+
+                                addSemesterBtn.addEventListener('click', () => {
+                                    semesterCount++;
+
+                                    const semesterDiv = document.createElement('div');
+                                    semesterDiv.innerHTML = `
+                <h3>Semester ${semesterCount}</h3>
+                <br>
+                <div id="subjectContainer${semesterCount}"></div>
+                <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
+                  Add Subject
+                </button>
+                <br><br>
+              `;
+                                    semesterContainer.appendChild(semesterDiv);
+
+                                    const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
+                                    const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
+
+                                    addSubjectBtn.addEventListener('click', () => {
+                                        const subjectDiv = document.createElement('div');
+                                        subjectDiv.innerHTML = `
+                  <label for="subjectName">Subject Name:</label>
+                  <input type="text" name="subjectName${semesterCount}[]" required>
+                  <br>
+                  <label for="marks">Marks:</label>
+                  <input type="number" name="marks${semesterCount}[]" min="0" max="100" required>
+                  <br>
+                  <label for="hours">Hours:</label>
+                  <input type="number" name="hours${semesterCount}[]" required>
+                  <br>
+                  <label for="grade">Grade:</label>
+                  <select name="grade${semesterCount}[]" required>
+                    <option value="">Select Grade</option>
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="C+">C+</option>
+                    <option value="C">C</option>
+                    <option value="D+">D+</option>
+                    <option value="D">D</option>
+                    <option value="F">F</option>
+                  </select>
+                `;
+                                        subjectContainer.appendChild(subjectDiv);
+                                    });
+                                });
+
+                               
+                            },
+                        });
+                    });
+                },
+            });
+        }
     </script>
     <!-- GPA -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -186,46 +299,46 @@ if ($user == null) {
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+            <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php?q=My Files"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    Quiz
+                </li>
+                <li class="tool_item">
+                    Flashcard
+                </li>
+                <li class="tool_item">
+                    Summarization
+                </li>
+                <li class="tool_item">
+                    Study Planner
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item">
+                    Shared spaces
+                </li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="main-content mainpage">
@@ -234,7 +347,7 @@ if ($user == null) {
                     <h1>My GPA</h1>
                 </div>
                 <div class="col-md-6" style="position:relative">
-                    <button type="button" id="new-gpa-btn" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                    <button type="button" id="new-gpa-btn" class="btn btn-primary" onclick="newGPA()">
                         New GPA
                     </button>
                 </div>
@@ -261,8 +374,8 @@ if ($user == null) {
 
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
-</footer>
+        <div id="copyright">Learniverse &copy; 2023</div>
+    </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;
@@ -271,7 +384,7 @@ if ($user == null) {
 </body>
 
 <!-- gpa model: -->
-
+<!-- 
 
 <div class="modal fade" id="myModal">
     <div class="modal-dialog modal-lg" class="modal-cont">
@@ -280,7 +393,7 @@ if ($user == null) {
                 <h4 class="modal-title">Add new GPA</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <!-- Modal Body -->
+             Modal Body 
             <div class="modal-body">
                 <div class="gpa-container">
                     <div class="row non-update">
@@ -444,7 +557,7 @@ if ($user == null) {
                     </div>
                 </div>
             </div>
-            <!-- Modal Footer -->
+             Modal Footer 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary step1 non-update" id="next-step">Next</button>
@@ -452,7 +565,7 @@ if ($user == null) {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Calculate GPA :-->
 <script>
