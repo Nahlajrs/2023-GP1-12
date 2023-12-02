@@ -264,7 +264,7 @@ if ($user == null) {
         <input type="text" id="year" name="year" required>
         <br>
         <label class="txt" for="gpaType">GPA System Type:</label>
-        <br>
+        <br><br>
         <input type="radio" id="type5" name="gpaType" value="5" required>
         <label class="radio" for="type5">5.0</label>
         <input type="radio" id="type4" name="gpaType" value="4" required>
