@@ -42,6 +42,8 @@ if ($user == null) {
 
     <!-- GPA FUNCTIONS -->
     <script>
+        gpaType = "";
+
         function updateSubjectRating(inputElement) { // If marks = 95 then grade is A
             var degreeValue = parseFloat($(inputElement).val());
             var subjectRatingSelect = $(inputElement).closest('.subjectContainer').find('.grade');
@@ -108,20 +110,64 @@ if ($user == null) {
             }
         }
 
+        function getGPA() {
+            var selectedGpaSystem = gpaType;
+            var gpa = parseInt(selectedGpaSystem);
+            return gpa;
+        }
+
+        function GPA_Ratio(subjectRating) {
+            gpa = getGPA();
+            gpaValue = 0;
+            switch (subjectRating) {
+                case 'A+':
+                    gpaValue = gpa === 5 ? 5 : 4;
+                    break;
+                case 'A':
+                    gpaValue = gpa === 5 ? 4.75 : 3.75;
+                    break;
+                case 'B+':
+                    gpaValue = gpa === 5 ? 4.5 : 3.5;
+                    break;
+                case 'B':
+                    gpaValue = gpa === 5 ? 4 : 3;
+                    break;
+                case 'C+':
+                    gpaValue = gpa === 5 ? 3.5 : 2.5;
+                    break;
+                case 'C':
+                    gpaValue = gpa === 5 ? 3 : 2;
+                    break;
+                case 'D+':
+                    gpaValue = gpa === 5 ? 2.5 : 1.5;
+                    break;
+                case 'D':
+                    gpaValue = gpa === 5 ? 2 : 1;
+                    break;
+                case 'F':
+                    gpaValue = gpa === 5 ? 0 : 0;
+                    break;
+                default:
+                    gpaValue = gpa === 5 ? 0 : 0;
+                    break;
+            }
+            return gpaValue;
+        }
+
         function updateSubjectPoint(inputElement) {
             console.log("updating subject points ", getGPA());
-            var subject = $(inputElement).closest('.subjectContainer');
-            var subjectHour = parseFloat(row.find('.hours').val());
-            var subjectRating = row.find('.grade').val();
+            var subject = $(inputElement).closest('.subject');
+            var subjectHour = parseFloat(subject.find('.hours').val());
+            var subjectRating = subject.find('.grade').val();
             gpa = getGPA();
             if (gpa === 100) return;
             gpaValue = GPA_Ratio(subjectRating);
             var subjectPoint = (subjectHour * gpaValue).toFixed(2);
             if (isNaN(subjectPoint)) {
-                row.find('.subjectPoint').text('');
+                subject.find('.points').text('');
                 return 0;
             } else {
-                row.find('.subjectPoint').text(subjectPoint);
+                subject.find('.points').text(subjectPoint);
                 return subjectPoint;
             }
         }
@@ -211,20 +257,17 @@ if ($user == null) {
         <input type="radio" id="type100" name="gpaType" value="100" required>
         <label for="type100">100</label>
         <br>
-        <button type="button" id="nextBtn">Next</button>
       </form>`,
                 showCancelButton: true,
-                showConfirmButton: false,
+                showConfirmButton: true,
                 cancelButtonText: 'Close',
-                didOpen: () => {
-                    const nextBtn = document.getElementById('nextBtn');
+                confirmButtonText: 'Next',
+            }).then((result) => {
+                const gpaName = document.getElementById('gpaName').value;
+                const year = document.getElementById('year').value;
+                gpaType = document.querySelector('input[name="gpaType"]:checked').value;
 
-                    nextBtn.addEventListener('click', () => {
-                        const gpaName = document.getElementById('gpaName').value;
-                        const year = document.getElementById('year').value;
-                        const gpaType = document.querySelector('input[name="gpaType"]:checked').value;
-
-                        const displayHtml = `
+                const displayHtml = `
           <h3>GPA Name: ${gpaName}</h3>
           <h4>Year: ${year}</h4>
           <h4>GPA System Type: ${gpaType}</h4>
@@ -233,27 +276,27 @@ if ($user == null) {
           GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
         `;
 
-                        Swal.fire({
-                            title: 'New GPA',
-                            html: displayHtml,
-                            showCancelButton: true,
-                            showConfirmButton: true,
-                            cancelButtonText: 'Close',
-                            confirmButtonText: 'Save',
-                            didOpen: () => {
-                                gpaForm = document.getElementById('gpaForm2');
-                                const addSemesterBtn = document.getElementById('addSemesterBtn');
-                                const semesterContainer = document.createElement('div');
-                                semesterContainer.id = 'semesterContainer';
-                                Swal.getHtmlContainer().appendChild(semesterContainer);
+                Swal.fire({
+                    title: 'New GPA',
+                    html: displayHtml,
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    cancelButtonText: 'Close',
+                    confirmButtonText: 'Save',
+                    didOpen: () => {
+                        gpaForm = document.getElementById('gpaForm2');
+                        const addSemesterBtn = document.getElementById('addSemesterBtn');
+                        const semesterContainer = document.createElement('div');
+                        semesterContainer.id = 'semesterContainer';
+                        Swal.getHtmlContainer().appendChild(semesterContainer);
 
 
-                                addSemesterBtn.addEventListener('click', () => {
-                                    semesterCount++;
+                        addSemesterBtn.addEventListener('click', () => {
+                            semesterCount++;
 
-                                    const semesterDiv = document.createElement('div');
-                                    semesterDiv.classList.add('semester');
-                                    semesterDiv.innerHTML = `
+                            const semesterDiv = document.createElement('div');
+                            semesterDiv.classList.add('semester');
+                            semesterDiv.innerHTML = `
         <h3>Semester ${semesterCount}</h3>
         <br>
         <div class="subjectContainer" id="subjectContainer${semesterCount}"></div>
@@ -262,26 +305,26 @@ if ($user == null) {
         </button>
         <br><br>
       `;
-                                    semesterContainer.appendChild(semesterDiv);
-                                    gpaForm.appendChild(semesterContainer);
-                                    const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
-                                    const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
+                            semesterContainer.appendChild(semesterDiv);
+                            gpaForm.appendChild(semesterContainer);
+                            const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
+                            const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
 
-                                    addSubjectBtn.addEventListener('click', () => {
-                                        const subjectDiv = document.createElement('div');
-                                        subjectDiv.classList.add('subject');
-                                        subjectDiv.innerHTML = `
+                            addSubjectBtn.addEventListener('click', () => {
+                                const subjectDiv = document.createElement('div');
+                                subjectDiv.classList.add('subject');
+                                subjectDiv.innerHTML = `
           <label for="subjectName">Subject Name:</label>
           <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
           <br>
           <label for="marks">Marks:</label>
-          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc();" oninput="updateSubjectRating(this)">
+          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc(); updateSubjectPoint(this)" oninput="updateSubjectRating(this)">
           <br>
           <label for="hours">Hours:</label>
-          <input type="number" class="hours" name="hours${semesterCount}[]" required onchange="recalc()">
+          <input type="number" class="hours" name="hours${semesterCount}[]" required onchange="recalc(); updateSubjectPoint(this)">
           <br>
           <label for="grade">Grade:</label>
-          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); recalc()">
+          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); recalc(); updateSubjectPoint(this)">
             <option value="">Select Grade</option>
             <option value="A+">A+</option>
             <option value="A">A</option>
@@ -297,44 +340,42 @@ if ($user == null) {
           <label for="points">Points: </label>
           <input disabled name="points${semesterCount}[]" class="points" placeholder="0.0">
         `;
-                                        subjectContainer.appendChild(subjectDiv);
-                                    });
+                                subjectContainer.appendChild(subjectDiv);
+                            });
+                        });
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData(gpaForm);
+                        formData.append('semesterCount', semesterCount);
+                        alert(formData.get('gpaResult'));
+                        $.ajax({
+                            url: 'gpabackend.php',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                Swal.fire({
+                                    title: 'GPA Saved',
+                                    text: 'GPA has been saved successfully.',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500,
                                 });
                             },
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const formData = new FormData(gpaForm);
-                                formData.append('semesterCount', semesterCount);
-                                alert(formData.get('gpaResult'));
-                                $.ajax({
-                                    url: 'gpabackend.php',
-                                    type: 'POST',
-                                    data: formData,
-                                    processData: false,
-                                    contentType: false,
-                                    success: function(response) {
-                                        Swal.fire({
-                                            title: 'GPA Saved',
-                                            text: 'GPA has been saved successfully.',
-                                            icon: 'success',
-                                            showConfirmButton: false,
-                                            timer: 1500,
-                                        });
-                                    },
-                                    error: function() {
-                                        Swal.fire({
-                                            title: 'Error',
-                                            text: 'An error occurred while saving the GPA.',
-                                            icon: 'error',
-                                            showConfirmButton: false,
-                                            timer: 1500,
-                                        });
-                                    },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred while saving the GPA.',
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                                    timer: 1500,
                                 });
-                            }
+                            },
                         });
-                    });
-                }
+                    }
+                });
             });
         }
     </script>
@@ -710,49 +751,7 @@ if ($user == null) {
         $('.step2').toggleClass('d-none');
     })
 
-    function getGPA() {
-        var selectedGpaSystem = $('input[name="gpaSystem"]:checked').val();
-        var gpa = parseInt(selectedGpaSystem);
-        return gpa;
-    }
 
-    function GPA_Ratio(subjectRating) {
-        gpa = getGPA();
-        gpaValue = 0;
-        switch (subjectRating) {
-            case 'A+':
-                gpaValue = gpa === 5 ? 5 : 4;
-                break;
-            case 'A':
-                gpaValue = gpa === 5 ? 4.75 : 3.75;
-                break;
-            case 'B+':
-                gpaValue = gpa === 5 ? 4.5 : 3.5;
-                break;
-            case 'B':
-                gpaValue = gpa === 5 ? 4 : 3;
-                break;
-            case 'C+':
-                gpaValue = gpa === 5 ? 3.5 : 2.5;
-                break;
-            case 'C':
-                gpaValue = gpa === 5 ? 3 : 2;
-                break;
-            case 'D+':
-                gpaValue = gpa === 5 ? 2.5 : 1.5;
-                break;
-            case 'D':
-                gpaValue = gpa === 5 ? 2 : 1;
-                break;
-            case 'F':
-                gpaValue = gpa === 5 ? 0 : 0;
-                break;
-            default:
-                gpaValue = gpa === 5 ? 0 : 0;
-                break;
-        }
-        return gpaValue;
-    }
 
     function recalc() {
         // Code to recalculate GPA based on the input values
