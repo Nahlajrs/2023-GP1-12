@@ -46,7 +46,7 @@ if ($user == null) {
 
         function updateSubjectRating(inputElement) { // If marks = 95 then grade is A
             var degreeValue = parseFloat($(inputElement).val());
-            var subjectRatingSelect = $(inputElement).closest('.subjectContainer').find('.grade');
+            var subjectRatingSelect = $(inputElement).closest('.subject').find('.grade');
             if (!isNaN(degreeValue)) {
                 if (degreeValue >= 95) {
                     subjectRatingSelect.val('A+');
@@ -75,7 +75,7 @@ if ($user == null) {
         function updateSubjectDegree(selectElement) { // if A then marks = 90
             console.log("updating marks based on grade");
             var selectedRating = $(selectElement).val();
-            var subjectDegreeInput = $(selectElement).closest('.subjectContainer').find('.marks');
+            var subjectDegreeInput = $(selectElement).closest('.subject').find('.marks');
             switch (selectedRating) {
                 case 'A+':
                     subjectDegreeInput.val('95');
@@ -164,11 +164,28 @@ if ($user == null) {
             gpaValue = GPA_Ratio(subjectRating);
             var subjectPoint = (subjectHour * gpaValue).toFixed(2);
             if (isNaN(subjectPoint)) {
-                subject.find('.points').text('');
+                subject.find('.points').val('0.0');
                 return 0;
             } else {
-                subject.find('.points').text(subjectPoint);
+                subject.find('.points').val(subjectPoint);
                 return subjectPoint;
+            }
+        }
+
+        function recalc() {
+            // Code to recalculate GPA based on the input values
+            console.log('Recalculating GPA...');
+
+            const pointsElements = document.getElementsByClassName('points');
+            for (let i = 0; i < pointsElements.length; i++) {
+                totalPoints += parseFloat(pointsElements[i].value);
+            }
+
+            console.log("POINTS: ", totalPoints);
+
+            const hoursElements = document.getElementsByClassName('hours');
+            for (let i = 0; i < hoursElements.length; i++) {
+                totalHours += parseFloat(hoursElements[i].value);
             }
         }
     </script>
@@ -258,8 +275,8 @@ if ($user == null) {
         <label for="type100">100</label>
         <br>
       </form>`,
-                showCancelButton: true,
                 showConfirmButton: true,
+                showCancelButton: true,
                 cancelButtonText: 'Close',
                 confirmButtonText: 'Next',
             }).then((result) => {
@@ -271,16 +288,17 @@ if ($user == null) {
           <h3>GPA Name: ${gpaName}</h3>
           <h4>Year: ${year}</h4>
           <h4>GPA System Type: ${gpaType}</h4>
-          <button type="button" id="addSemesterBtn">Add Semester</button>
           <form id="gpaForm2">
-          GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
+            GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
+          </form>
+          <button type="button" id="addSemesterBtn">Add Semester</button>
         `;
 
                 Swal.fire({
                     title: 'New GPA',
                     html: displayHtml,
-                    showCancelButton: true,
                     showConfirmButton: true,
+                    showCancelButton: true,
                     cancelButtonText: 'Close',
                     confirmButtonText: 'Save',
                     didOpen: () => {
@@ -318,10 +336,10 @@ if ($user == null) {
           <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
           <br>
           <label for="marks">Marks:</label>
-          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc(); updateSubjectPoint(this)" oninput="updateSubjectRating(this)">
+          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc();" oninput="updateSubjectRating(this)">
           <br>
           <label for="hours">Hours:</label>
-          <input type="number" class="hours" name="hours${semesterCount}[]" required onchange="recalc(); updateSubjectPoint(this)">
+          <input type="number" class="hours" name="hours${semesterCount}[]" required oninput="recalc(); updateSubjectPoint(this)">
           <br>
           <label for="grade">Grade:</label>
           <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); recalc(); updateSubjectPoint(this)">
@@ -753,11 +771,7 @@ if ($user == null) {
 
 
 
-    function recalc() {
-        // Code to recalculate GPA based on the input values
-        console.log('Recalculating GPA...');
-        // You can perform your calculations and update the display accordingly
-    }
+
 
     // function recalc() {
     //     console.log("recalculating......")
