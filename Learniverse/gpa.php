@@ -108,10 +108,10 @@ if ($user == null) {
         }
 
         function updateSubjectPoint(inputElement) {
-            console.log("ff", getGPA());
-            var row = $(inputElement).closest('tr');
-            var subjectHour = parseFloat(row.find('.subjectHour').val());
-            var subjectRating = row.find('.subjectRating').val();
+            console.log("updating subject points ", getGPA());
+            var subject = $(inputElement).closest('.subjectContainer');
+            var subjectHour = parseFloat(row.find('.hours').val());
+            var subjectRating = row.find('.grade').val();
             gpa = getGPA();
             if (gpa === 100) return;
             gpaValue = GPA_Ratio(subjectRating);
@@ -229,7 +229,7 @@ if ($user == null) {
           <h4>GPA System Type: ${gpaType}</h4>
           <button type="button" id="addSemesterBtn">Add Semester</button>
           <form id="gpaForm2">
-          GPA: <input disabled id="gpaResult" name="gpaResult" value="gRESULT">
+          GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
         `;
 
                         Swal.fire({
@@ -251,6 +251,7 @@ if ($user == null) {
                                     semesterCount++;
 
                                     const semesterDiv = document.createElement('div');
+                                    semesterDiv.classList.add('semester');
                                     semesterDiv.innerHTML = `
         <h3>Semester ${semesterCount}</h3>
         <br>
@@ -292,7 +293,7 @@ if ($user == null) {
           </select>
           <br>
           <label for="points">Points: </label>
-          <input disabled name="points${semesterCount}[]" class="points">
+          <input disabled name="points${semesterCount}[]" class="points" placeholder="0.0">
         `;
                                         subjectContainer.appendChild(subjectDiv);
                                     });
