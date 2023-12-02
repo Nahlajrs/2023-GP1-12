@@ -40,6 +40,91 @@ if ($user == null) {
     <!-- GPA STYLESHEET -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 
+    <!-- GPA FUNCTIONS -->
+    <script>
+        function updateSubjectRating(inputElement) {// If marks = 95 then grade is A
+            var degreeValue = parseFloat($(inputElement).val());
+            var subjectRatingSelect = $(inputElement).closest('.subjectContainer').find('.grade');
+            if (!isNaN(degreeValue)) {
+                if (degreeValue >= 95) {
+                    subjectRatingSelect.val('A+');
+                } else if (degreeValue >= 90) {
+                    subjectRatingSelect.val('A');
+                } else if (degreeValue >= 85) {
+                    subjectRatingSelect.val('B+');
+                } else if (degreeValue >= 80) {
+                    subjectRatingSelect.val('B');
+                } else if (degreeValue >= 75) {
+                    subjectRatingSelect.val('C+');
+                } else if (degreeValue >= 70) {
+                    subjectRatingSelect.val('C');
+                } else if (degreeValue >= 60) {
+                    subjectRatingSelect.val('D+');
+                } else if (degreeValue >= 55) {
+                    subjectRatingSelect.val('D');
+                } else {
+                    subjectRatingSelect.val('F');
+                }
+            } else {
+                subjectRatingSelect.val('');
+            }
+        }
+
+        function updateSubjectDegree(selectElement) { // if A then marks = 90
+            console.log("updating marks based on grade");
+            var selectedRating = $(selectElement).val();
+            var subjectDegreeInput = $(selectElement).closest('.subjectContainer').find('.marks');            switch (selectedRating) {
+                case 'A+':
+                    subjectDegreeInput.val('95');
+                    break;
+                case 'A':
+                    subjectDegreeInput.val('90');
+                    break;
+                case 'B+':
+                    subjectDegreeInput.val('85');
+                    break;
+                case 'B':
+                    subjectDegreeInput.val('80');
+                    break;
+                case 'C+':
+                    subjectDegreeInput.val('75');
+                    break;
+                case 'C':
+                    subjectDegreeInput.val('70');
+                    break;
+                case 'D+':
+                    subjectDegreeInput.val('60');
+                    break;
+                case 'D':
+                    subjectDegreeInput.val('55');
+                    break;
+                case 'F':
+                    subjectDegreeInput.val('0');
+                    break;
+                default:
+                    subjectDegreeInput.val('');
+                    break;
+            }
+        }
+
+        function updateSubjectPoint(inputElement) {
+            console.log("ff", getGPA());
+            var row = $(inputElement).closest('tr');
+            var subjectHour = parseFloat(row.find('.subjectHour').val());
+            var subjectRating = row.find('.subjectRating').val();
+            gpa = getGPA();
+            if (gpa === 100) return;
+            gpaValue = GPA_Ratio(subjectRating);
+            var subjectPoint = (subjectHour * gpaValue).toFixed(2);
+            if (isNaN(subjectPoint)) {
+                row.find('.subjectPoint').text('');
+                return 0;
+            } else {
+                row.find('.subjectPoint').text(subjectPoint);
+                return subjectPoint;
+            }
+        }
+    </script>
     <!-- Sidebar --->
     <script>
         var isSidebarOpen = false;
@@ -156,7 +241,6 @@ if ($user == null) {
                             confirmButtonText: 'Save',
                             didOpen: () => {
                                 gpaForm = document.getElementById('gpaForm2');
-                                gpaForm.addEventListener('input', recalc);
                                 const addSemesterBtn = document.getElementById('addSemesterBtn');
                                 const semesterContainer = document.createElement('div');
                                 semesterContainer.id = 'semesterContainer';
@@ -170,7 +254,7 @@ if ($user == null) {
                                     semesterDiv.innerHTML = `
         <h3>Semester ${semesterCount}</h3>
         <br>
-        <div id="subjectContainer${semesterCount}"></div>
+        <div class="subjectContainer" id="subjectContainer${semesterCount}"></div>
         <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
           Add Subject
         </button>
@@ -185,16 +269,16 @@ if ($user == null) {
                                         const subjectDiv = document.createElement('div');
                                         subjectDiv.innerHTML = `
           <label for="subjectName">Subject Name:</label>
-          <input type="text" name="subjectName${semesterCount}[]" required>
+          <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
           <br>
           <label for="marks">Marks:</label>
-          <input type="number" name="marks${semesterCount}[]" min="0" max="100" required>
+          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc();" oninput="updateSubjectRating(this)">
           <br>
           <label for="hours">Hours:</label>
-          <input type="number" name="hours${semesterCount}[]" required>
+          <input type="number" class="hours" name="hours${semesterCount}[]" required onchange="recalc()">
           <br>
           <label for="grade">Grade:</label>
-          <select name="grade${semesterCount}[]" required>
+          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); recalc()">
             <option value="">Select Grade</option>
             <option value="A+">A+</option>
             <option value="A">A</option>
@@ -206,6 +290,8 @@ if ($user == null) {
             <option value="D">D</option>
             <option value="F">F</option>
           </select>
+          <label for="points">Points: </label>
+          <input disabled name="points${semesterCount}[]" class="points">
         `;
                                         subjectContainer.appendChild(subjectDiv);
                                     });
@@ -752,88 +838,7 @@ if ($user == null) {
     //     return isNaN(gpa) ? -1 : gpa;
     // }
 
-    function updateSubjectRating(inputElement) {
-        var degreeValue = parseFloat($(inputElement).val());
-        var subjectRatingSelect = $(inputElement).closest('tr').find('.subjectRating');
-        if (!isNaN(degreeValue)) {
-            if (degreeValue >= 95) {
-                subjectRatingSelect.val('A+');
-            } else if (degreeValue >= 90) {
-                subjectRatingSelect.val('A');
-            } else if (degreeValue >= 85) {
-                subjectRatingSelect.val('B+');
-            } else if (degreeValue >= 80) {
-                subjectRatingSelect.val('B');
-            } else if (degreeValue >= 75) {
-                subjectRatingSelect.val('C+');
-            } else if (degreeValue >= 70) {
-                subjectRatingSelect.val('C');
-            } else if (degreeValue >= 60) {
-                subjectRatingSelect.val('D+');
-            } else if (degreeValue >= 55) {
-                subjectRatingSelect.val('D');
-            } else {
-                subjectRatingSelect.val('F');
-            }
-        } else {
-            subjectRatingSelect.val('');
-        }
-    }
 
-    function updateSubjectDegree(selectElement) {
-        var selectedRating = $(selectElement).val();
-        var subjectDegreeInput = $(selectElement).closest('tr').find('.subjectDegree');
-        switch (selectedRating) {
-            case 'A+':
-                subjectDegreeInput.val('95');
-                break;
-            case 'A':
-                subjectDegreeInput.val('90');
-                break;
-            case 'B+':
-                subjectDegreeInput.val('85');
-                break;
-            case 'B':
-                subjectDegreeInput.val('80');
-                break;
-            case 'C+':
-                subjectDegreeInput.val('75');
-                break;
-            case 'C':
-                subjectDegreeInput.val('70');
-                break;
-            case 'D+':
-                subjectDegreeInput.val('60');
-                break;
-            case 'D':
-                subjectDegreeInput.val('55');
-                break;
-            case 'F':
-                subjectDegreeInput.val('0');
-                break;
-            default:
-                subjectDegreeInput.val('');
-                break;
-        }
-    }
-
-    function updateSubjectPoint(inputElement) {
-        console.log("ff", getGPA());
-        var row = $(inputElement).closest('tr');
-        var subjectHour = parseFloat(row.find('.subjectHour').val());
-        var subjectRating = row.find('.subjectRating').val();
-        gpa = getGPA();
-        if (gpa === 100) return;
-        gpaValue = GPA_Ratio(subjectRating);
-        var subjectPoint = (subjectHour * gpaValue).toFixed(2);
-        if (isNaN(subjectPoint)) {
-            row.find('.subjectPoint').text('');
-            return 0;
-        } else {
-            row.find('.subjectPoint').text(subjectPoint);
-            return subjectPoint;
-        }
-    }
 
     function reinit() {
         $('.subjectDegree').on("change keyup", function() {
