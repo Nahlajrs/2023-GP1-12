@@ -88,9 +88,7 @@ if ($user == null) {
                 document.getElementById("sidebar-tongue").style.marginLeft = '12%';
                 document.getElementById("sidebar-tongue").textContent = "<";
                 document.getElementById("sidebar-tongue").style.boxShadow = "none";
-                document.addEventListener('DOMContentLoaded', function() {
-                    calendar.render();
-                });
+                document.addEventListener('DOMContentLoaded', function() {});
             }
 
             function w3_close() {
@@ -100,17 +98,16 @@ if ($user == null) {
                 document.getElementById("sidebar-tongue").textContent = ">";
                 document.getElementById("tools_div").style.marginLeft = "-13.9%";
                 document.getElementById("sidebar-tongue").style.marginLeft = '0';
-                document.addEventListener('DOMContentLoaded', function() {
-                    calendar.render();
-                });
+                document.addEventListener('DOMContentLoaded', function() {});
             }
         });
 
         function newGPA() {
+            let semesterCount = 0;
             Swal.fire({
-                title: 'GPA Form',
+                title: 'New GPA',
                 html: `
-      <form id="gpaForm">
+      <form id="gpaForm1">
         <label for="gpaName">GPA Name:</label>
         <input type="text" id="gpaName" name="gpaName" required>
         <br>
@@ -134,7 +131,6 @@ if ($user == null) {
                 showConfirmButton: false,
                 cancelButtonText: 'Close',
                 didOpen: () => {
-                    const gpaForm = document.getElementById('gpaForm');
                     const nextBtn = document.getElementById('nextBtn');
 
                     nextBtn.addEventListener('click', () => {
@@ -147,75 +143,108 @@ if ($user == null) {
           <h4>Year: ${year}</h4>
           <h4>GPA System Type: ${gpaType}</h4>
           <button type="button" id="addSemesterBtn">Add Semester</button>
+          <form id="gpaForm2">
+          GPA: <input disabled id="gpaResult" name="gpaResult" value="gRESULT">
         `;
 
                         Swal.fire({
-                            title: 'GPA Form',
+                            title: 'New GPA',
                             html: displayHtml,
                             showCancelButton: true,
                             showConfirmButton: true,
                             cancelButtonText: 'Close',
+                            confirmButtonText: 'Save',
                             didOpen: () => {
+                                gpaForm = document.getElementById('gpaForm2');
+                                gpaForm.addEventListener('input', recalc);
                                 const addSemesterBtn = document.getElementById('addSemesterBtn');
                                 const semesterContainer = document.createElement('div');
                                 semesterContainer.id = 'semesterContainer';
                                 Swal.getHtmlContainer().appendChild(semesterContainer);
 
-                                let semesterCount = 0;
 
                                 addSemesterBtn.addEventListener('click', () => {
                                     semesterCount++;
 
                                     const semesterDiv = document.createElement('div');
                                     semesterDiv.innerHTML = `
-                <h3>Semester ${semesterCount}</h3>
-                <br>
-                <div id="subjectContainer${semesterCount}"></div>
-                <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
-                  Add Subject
-                </button>
-                <br><br>
-              `;
+        <h3>Semester ${semesterCount}</h3>
+        <br>
+        <div id="subjectContainer${semesterCount}"></div>
+        <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
+          Add Subject
+        </button>
+        <br><br>
+      `;
                                     semesterContainer.appendChild(semesterDiv);
-
+                                    gpaForm.appendChild(semesterContainer);
                                     const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
                                     const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
 
                                     addSubjectBtn.addEventListener('click', () => {
                                         const subjectDiv = document.createElement('div');
                                         subjectDiv.innerHTML = `
-                  <label for="subjectName">Subject Name:</label>
-                  <input type="text" name="subjectName${semesterCount}[]" required>
-                  <br>
-                  <label for="marks">Marks:</label>
-                  <input type="number" name="marks${semesterCount}[]" min="0" max="100" required>
-                  <br>
-                  <label for="hours">Hours:</label>
-                  <input type="number" name="hours${semesterCount}[]" required>
-                  <br>
-                  <label for="grade">Grade:</label>
-                  <select name="grade${semesterCount}[]" required>
-                    <option value="">Select Grade</option>
-                    <option value="A+">A+</option>
-                    <option value="A">A</option>
-                    <option value="B+">B+</option>
-                    <option value="B">B</option>
-                    <option value="C+">C+</option>
-                    <option value="C">C</option>
-                    <option value="D+">D+</option>
-                    <option value="D">D</option>
-                    <option value="F">F</option>
-                  </select>
-                `;
+          <label for="subjectName">Subject Name:</label>
+          <input type="text" name="subjectName${semesterCount}[]" required>
+          <br>
+          <label for="marks">Marks:</label>
+          <input type="number" name="marks${semesterCount}[]" min="0" max="100" required>
+          <br>
+          <label for="hours">Hours:</label>
+          <input type="number" name="hours${semesterCount}[]" required>
+          <br>
+          <label for="grade">Grade:</label>
+          <select name="grade${semesterCount}[]" required>
+            <option value="">Select Grade</option>
+            <option value="A+">A+</option>
+            <option value="A">A</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="C+">C+</option>
+            <option value="C">C</option>
+            <option value="D+">D+</option>
+            <option value="D">D</option>
+            <option value="F">F</option>
+          </select>
+        `;
                                         subjectContainer.appendChild(subjectDiv);
                                     });
                                 });
-
-                               
                             },
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const formData = new FormData(gpaForm);
+                                formData.append('semesterCount', semesterCount);
+                                alert(formData.get('gpaResult'));
+                                $.ajax({
+                                    url: 'gpabackend.php',
+                                    type: 'POST',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(response) {
+                                        Swal.fire({
+                                            title: 'GPA Saved',
+                                            text: 'GPA has been saved successfully.',
+                                            icon: 'success',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                        });
+                                    },
+                                    error: function() {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: 'An error occurred while saving the GPA.',
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                        });
+                                    },
+                                });
+                            }
                         });
                     });
-                },
+                }
             });
         }
     </script>
@@ -636,86 +665,92 @@ if ($user == null) {
     }
 
     function recalc() {
-        console.log("recalculating......")
-        var table = subTable;
-        var totalPoints = 0;
-        var totalHours = 0;
-        var totalDegrees = 0;
-        var count = 0;
-        table.find("tr").each(function() {
-            var currentRow = $(this);
-            var cell = currentRow.find("td:eq(0)");
-            curPoints = updateSubjectPoint(cell);
-            curHours = parseFloat(currentRow.find('.subjectHour').val());
-            if (!isNaN(curPoints) && !isNaN(curHours)) {
-                totalPoints += parseFloat(curPoints);
-                totalHours += parseFloat(curHours);
-            }
-            curDegree = parseFloat(currentRow.find('.subjectDegree').val());
-            if (!isNaN(curDegree)) {
-                totalDegrees += parseFloat(curDegree);
-                count += 1;
-            }
-        })
-        const oldgpa = parseFloat($('#gpa-old').val())
-        const oldhours = parseFloat($('#hours-old').val())
-        if (getGPA() === 100) {
-            console.log("highschool")
-            if (oldgpa !== 0) {
-                console.log("update 100 old gpa", oldgpa, oldhours);
-                totalDegrees += (oldgpa * oldhours)
-                count += oldhours
-            } else console.log("add 100 new gpa");
-            var gpa = totalDegrees / count;
-            $('#totalHour').text(count);
-            if (isNaN(gpa)) {
-                $('#totalTermRate').text('');
-            } else {
-                $('#totalTermRate').text(gpa.toFixed(2));
-            }
-            if (oldgpa !== 0) {
-                $('#gpa-new').text(gpa.toFixed(2));
-            }
-            if (isNaN(gpa)) {
-                $('#totalRate').text('');
-            } else {
-                $('#totalRate').text(gpa.toFixed(2));
-            }
-            return isNaN(gpa) ? -1 : gpa;
-        }
-
-        if (oldgpa !== 0) {
-            console.log("update old gpa", oldgpa, oldhours);
-            totalPoints += (oldgpa * oldhours);
-            totalHours += oldhours;
-        } else console.log("add new gpa");
-
-        var gpa = totalPoints / totalHours;
-        if (!isNaN(gpa)) {
-            $('#totalTermPoint').text(totalPoints.toFixed(2));
-            $('#totalTermHour').text(totalHours.toFixed(2));
-            $('#totalTermRate').text(gpa.toFixed(2));
-        } else {
-            $('#totalTermPoint').text('');
-            $('#totalTermHour').text('');
-            $('#totalTermRate').text('');
-        }
-
-        if (!isNaN(gpa)) {
-            $('#totalPoint').text(totalPoints.toFixed(2));
-            $('#totalHour').text(totalHours.toFixed(2));
-            $('#totalRate').text(gpa.toFixed(2));
-        } else {
-            $('#totalPoint').text('');
-            $('#totalHour').text('');
-            $('#totalRate').text('');
-        }
-
-        if (oldgpa !== 0) {
-            $('#gpa-new').text(gpa.toFixed(2));
-        }
-        return isNaN(gpa) ? -1 : gpa;
+        // Code to recalculate GPA based on the input values
+        console.log('Recalculating GPA...');
+        // You can perform your calculations and update the display accordingly
     }
+
+    // function recalc() {
+    //     console.log("recalculating......")
+    //     var table = subTable;
+    //     var totalPoints = 0;
+    //     var totalHours = 0;
+    //     var totalDegrees = 0;
+    //     var count = 0;
+    //     table.find("tr").each(function() {
+    //         var currentRow = $(this);
+    //         var cell = currentRow.find("td:eq(0)");
+    //         curPoints = updateSubjectPoint(cell);
+    //         curHours = parseFloat(currentRow.find('.subjectHour').val());
+    //         if (!isNaN(curPoints) && !isNaN(curHours)) {
+    //             totalPoints += parseFloat(curPoints);
+    //             totalHours += parseFloat(curHours);
+    //         }
+    //         curDegree = parseFloat(currentRow.find('.subjectDegree').val());
+    //         if (!isNaN(curDegree)) {
+    //             totalDegrees += parseFloat(curDegree);
+    //             count += 1;
+    //         }
+    //     })
+    //     const oldgpa = parseFloat($('#gpa-old').val())
+    //     const oldhours = parseFloat($('#hours-old').val())
+    //     if (getGPA() === 100) {
+    //         console.log("highschool")
+    //         if (oldgpa !== 0) {
+    //             console.log("update 100 old gpa", oldgpa, oldhours);
+    //             totalDegrees += (oldgpa * oldhours)
+    //             count += oldhours
+    //         } else console.log("add 100 new gpa");
+    //         var gpa = totalDegrees / count;
+    //         $('#totalHour').text(count);
+    //         if (isNaN(gpa)) {
+    //             $('#totalTermRate').text('');
+    //         } else {
+    //             $('#totalTermRate').text(gpa.toFixed(2));
+    //         }
+    //         if (oldgpa !== 0) {
+    //             $('#gpa-new').text(gpa.toFixed(2));
+    //         }
+    //         if (isNaN(gpa)) {
+    //             $('#totalRate').text('');
+    //         } else {
+    //             $('#totalRate').text(gpa.toFixed(2));
+    //         }
+    //         return isNaN(gpa) ? -1 : gpa;
+    //     }
+
+    //     if (oldgpa !== 0) {
+    //         console.log("update old gpa", oldgpa, oldhours);
+    //         totalPoints += (oldgpa * oldhours);
+    //         totalHours += oldhours;
+    //     } else console.log("add new gpa");
+
+    //     var gpa = totalPoints / totalHours;
+    //     if (!isNaN(gpa)) {
+    //         $('#totalTermPoint').text(totalPoints.toFixed(2));
+    //         $('#totalTermHour').text(totalHours.toFixed(2));
+    //         $('#totalTermRate').text(gpa.toFixed(2));
+    //     } else {
+    //         $('#totalTermPoint').text('');
+    //         $('#totalTermHour').text('');
+    //         $('#totalTermRate').text('');
+    //     }
+
+    //     if (!isNaN(gpa)) {
+    //         $('#totalPoint').text(totalPoints.toFixed(2));
+    //         $('#totalHour').text(totalHours.toFixed(2));
+    //         $('#totalRate').text(gpa.toFixed(2));
+    //     } else {
+    //         $('#totalPoint').text('');
+    //         $('#totalHour').text('');
+    //         $('#totalRate').text('');
+    //     }
+
+    //     if (oldgpa !== 0) {
+    //         $('#gpa-new').text(gpa.toFixed(2));
+    //     }
+    //     return isNaN(gpa) ? -1 : gpa;
+    // }
 
     function updateSubjectRating(inputElement) {
         var degreeValue = parseFloat($(inputElement).val());
