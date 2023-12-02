@@ -290,6 +290,7 @@ if ($user == null) {
             <option value="D">D</option>
             <option value="F">F</option>
           </select>
+          <br>
           <label for="points">Points: </label>
           <input disabled name="points${semesterCount}[]" class="points">
         `;
