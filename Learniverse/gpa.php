@@ -42,7 +42,7 @@ if ($user == null) {
 
     <!-- GPA FUNCTIONS -->
     <script>
-        function updateSubjectRating(inputElement) {// If marks = 95 then grade is A
+        function updateSubjectRating(inputElement) { // If marks = 95 then grade is A
             var degreeValue = parseFloat($(inputElement).val());
             var subjectRatingSelect = $(inputElement).closest('.subjectContainer').find('.grade');
             if (!isNaN(degreeValue)) {
@@ -73,7 +73,8 @@ if ($user == null) {
         function updateSubjectDegree(selectElement) { // if A then marks = 90
             console.log("updating marks based on grade");
             var selectedRating = $(selectElement).val();
-            var subjectDegreeInput = $(selectElement).closest('.subjectContainer').find('.marks');            switch (selectedRating) {
+            var subjectDegreeInput = $(selectElement).closest('.subjectContainer').find('.marks');
+            switch (selectedRating) {
                 case 'A+':
                     subjectDegreeInput.val('95');
                     break;
@@ -268,6 +269,7 @@ if ($user == null) {
 
                                     addSubjectBtn.addEventListener('click', () => {
                                         const subjectDiv = document.createElement('div');
+                                        subjectDiv.classList.add('subject');
                                         subjectDiv.innerHTML = `
           <label for="subjectName">Subject Name:</label>
           <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
