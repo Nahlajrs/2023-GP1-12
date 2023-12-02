@@ -257,22 +257,20 @@ if ($user == null) {
                 title: 'New GPA',
                 html: `
       <form id="gpaForm1">
-        <label for="gpaName">GPA Name:</label>
+        <label class="txt" for="gpaName">GPA Name:</label>
         <input type="text" id="gpaName" name="gpaName" required>
         <br>
-        <label for="year">Year:</label>
+        <label class="txt" for="year">Year:</label>
         <input type="text" id="year" name="year" required>
         <br>
-        <label for="gpaType">GPA System Type:</label>
+        <label class="txt" for="gpaType">GPA System Type:</label>
         <br>
         <input type="radio" id="type5" name="gpaType" value="5" required>
-        <label for="type5">5.0</label>
-        <br>
+        <label class="radio" for="type5">5.0</label>
         <input type="radio" id="type4" name="gpaType" value="4" required>
-        <label for="type4">4.0</label>
-        <br>
+        <label class="radio" for="type4">4.0</label>
         <input type="radio" id="type100" name="gpaType" value="100" required>
-        <label for="type100">100</label>
+        <label class="radio" for="type100">100</label>
         <br>
       </form>`,
                 showConfirmButton: true,
