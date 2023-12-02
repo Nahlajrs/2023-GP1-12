@@ -332,15 +332,15 @@ if ($user == null) {
                 gpaType = document.querySelector('input[name="gpaType"]:checked').value;
 
                 const displayHtml = `
-          <h3>GPA Name: ${gpaName}</h3>
-          <h4>Year: ${year}</h4>
-          <h4>GPA System Type: ${gpaType}</h4>
+          <h3>GPA Name: ${gpaName}</h3><br><br>
+          <b>Year: ${year}</b><br><br>
+          <b>GPA System Type: ${gpaType}</b><br><br>
           <form id="gpaForm2">
           <input type="hidden" name="gpaName" value="${gpaName}">
           <input type="hidden" name="gpaYear" value="${year}">
           <input type="hidden" name="gpaType" value="${gpaType}">
 
-            GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
+          <span> <b>GPA:</b> <input disabled id="gpaResult" name="gpaResult" placeholder="0.0"></span>
           </form>
           <button type="button" id="addSemesterBtn">Add Semester</button>
         `;
@@ -370,8 +370,7 @@ if ($user == null) {
         <div class="subjectContainer" id="subjectContainer${semesterCount}"></div>
         <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
           Add Subject
-        </button>
-        <br><br>
+        </button><br><br>
       `;
                             semesterContainer.appendChild(semesterDiv);
                             gpaForm.appendChild(semesterContainer);
@@ -383,16 +382,16 @@ if ($user == null) {
                                 subjectDiv.classList.add('subject');
                                 subjectDiv.innerHTML = `
           <label for="subjectName">Subject Name:</label>
-          <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
+          <input type="text" class="subjectName fill" name="subjectName${semesterCount}[]" required>
           <br>
           <label for="marks">Marks:</label>
-          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="updateSubjectPoint(this); recalc();" oninput="updateSubjectRating(this); updateSubjectPoint(this); recalc();">
+          <input type="number" class="marks fill" name="marks${semesterCount}[]" min="0" max="100" required onchange="updateSubjectPoint(this); recalc();" oninput="updateSubjectRating(this); updateSubjectPoint(this); recalc();">
           <br>
           <label for="hours">Hours:</label>
-          <input type="number" class="hours" name="hours${semesterCount}[]" required oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
+          <input type="number" class="hours fill" name="hours${semesterCount}[]" required oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
           <br>
           <label for="grade">Grade:</label>
-          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); updateSubjectPoint(this); recalc();">
+          <select name="grade${semesterCount}[]" class="grade fill" required onchange="updateSubjectDegree(this); updateSubjectPoint(this); recalc();">
             <option value="">Select Grade</option>
             <option value="A+">A+</option>
             <option value="A">A</option>
@@ -405,8 +404,8 @@ if ($user == null) {
             <option value="F">F</option>
           </select>
           <br>
-          <label for="points">Points: </label>
-          <input disabled name="points${semesterCount}[]" class="points" placeholder="0.0">
+          <label for="points fill">Points: </label>
+          <input disabled name="points${semesterCount}[]" class="points fill" placeholder="0.0">
         `;
                                 subjectContainer.appendChild(subjectDiv);
                             });
