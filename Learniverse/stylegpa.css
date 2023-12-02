@@ -435,57 +435,17 @@ body {
 
 /* Style for the overall SweetAlert container to make it wider */
 .swal2-popup {
-    max-width: 80% !important; /* Override SweetAlert default max-width */
-  }
-  
-  /* Flexbox container for each subject's inputs and labels */
-  .subject {
-    display: flex;
-    align-items: center; /* Align items vertically */
-    justify-content: space-between; /* Distribute space evenly */
-    flex-wrap: wrap; /* Wrap onto new lines if necessary */
-    gap: 5px; /* Space between items */
-  }
-  
-  /* Flex item styles for inputs and labels within a subject */
-  .subject label,
-  .subject input,
-  .subject select {
-    flex: 1 1 18%; /* Allow each item to grow and shrink, starting with 18% of the flex container width */
-    margin-bottom: 10px; /* Margin at the bottom of each item */
-  }
-  
-  /* Specific style adjustments for individual form elements */
-  .subject .subjectName {
-    flex-basis: 22%; /* Adjusted width for subject name input */
-  }
-  
-  .subject .marks,
-  .subject .hours {
-    flex-basis: 15%; /* Adjusted width for marks and hours input */
-  }
-  
-  .subject .grade {
-    flex-basis: 20%; /* Adjusted width for grade dropdown */
-  }
-  
-  .subject .points {
-    flex-basis: 15%; /* Adjusted width for points input */
-  }
-  
-  /* Style adjustments for labels to prevent them from taking up too much space */
-  .subject label {
-    margin-right: 5px; /* Add some space to the right of labels */
-    white-space: nowrap; /* Prevent labels from wrapping */
-    flex: none; /* Do not allow labels to grow or shrink */
-  }
-  
-  /* Button styles */
-  .addSubjectBtn, #addSemesterBtn {
-    flex-basis: 100%; /* Button takes full width */
-    margin-top: 10px; /* Space above the button */
-  }
-  
+  max-width: 80% !important; /* Override SweetAlert default max-width */
+}
+
+
+
+
+/* Button styles */
+.addSubjectBtn, #addSemesterBtn {
+  flex-basis: 100%; /* Button takes full width */
+  margin-top: 10px; /* Space above the button */
+}
 
 
 
@@ -493,14 +453,13 @@ body {
 
 
 
-  
-  /* Base styles */
+
+
+/* Base styles */
 body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  background: #f4f4f4;
-  margin: 0;
-  padding: 20px;
+font-family: Arial, sans-serif;
+line-height: 1.6;
+background: #f4f4f4;
 }
 
 /* Style for the form */
