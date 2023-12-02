@@ -176,17 +176,18 @@ if ($user == null) {
             // Code to recalculate GPA based on the input values
             console.log('Recalculating GPA...');
 
+            let totalPoints = 0;
+            let totalHours = 0;
+
             const pointsElements = document.getElementsByClassName('points');
+            const hoursElements = document.getElementsByClassName('hours');
+
             for (let i = 0; i < pointsElements.length; i++) {
                 totalPoints += parseFloat(pointsElements[i].value);
+                totalHours += parseFloat(hoursElements[i].value);
             }
 
             console.log("POINTS: ", totalPoints);
-
-            const hoursElements = document.getElementsByClassName('hours');
-            for (let i = 0; i < hoursElements.length; i++) {
-                totalHours += parseFloat(hoursElements[i].value);
-            }
         }
     </script>
     <!-- Sidebar --->
@@ -277,6 +278,13 @@ if ($user == null) {
                 showCancelButton: true,
                 cancelButtonText: 'Close',
                 confirmButtonText: 'Next',
+                preConfirm: () => {
+                    const form = document.getElementById("gpaForm1");
+                    if (!form.checkValidity()) {
+                        Swal.showValidationMessage('All fields are required');
+                        return false; // Return false to prevent the modal from closing
+                    }
+                },
             }).then((result) => {
                 const gpaName = document.getElementById('gpaName').value;
                 const year = document.getElementById('year').value;
