@@ -44,6 +44,41 @@ if ($user == null) {
     <script>
         gpaType = "";
 
+        // function reinit() {
+        //     $('.marks').on("change keyup input", function() {
+        //         updateSubjectRating(this);
+        //         updateSubjectPoint(this);
+        //         recalc();
+        //     });
+
+        //     $('.grade').on("change keyup", function() {
+        //         updateSubjectDegree(this);
+        //         updateSubjectPoint(this);
+        //         recalc();
+        //     });
+
+        //     $('.hours').on("change keyup", function() {
+        //         updateSubjectPoint(this);
+        //         recalc();
+        //     });
+        // }
+        // reinit();
+        function showAlert(title, message) {
+            Swal.fire({
+                html: '<br><h1>' + title + '</h1>' +
+                    '' +
+                    '' +
+                    '<p>' + message + '</p>' +
+                    '' +
+                    '',
+                showCancelButton: false,
+                showConfirmButton: false,
+                cancelButtonText: 'Close',
+                buttonsStyling: false,
+                showCloseButton: true
+            });
+        }
+
         function updateSubjectRating(inputElement) { // If marks = 95 then grade is A
             var degreeValue = parseFloat($(inputElement).val());
             var subjectRatingSelect = $(inputElement).closest('.subject').find('.grade');
@@ -176,18 +211,23 @@ if ($user == null) {
             // Code to recalculate GPA based on the input values
             console.log('Recalculating GPA...');
 
-            let totalPoints = 0;
-            let totalHours = 0;
+            let totalPoints = 0.0;
+            let totalHours = 0.0;
 
             const pointsElements = document.getElementsByClassName('points');
             const hoursElements = document.getElementsByClassName('hours');
-
             for (let i = 0; i < pointsElements.length; i++) {
                 totalPoints += parseFloat(pointsElements[i].value);
                 totalHours += parseFloat(hoursElements[i].value);
             }
-
-            console.log("POINTS: ", totalPoints);
+            if (totalHours != 0) {
+                gpa = totalPoints / totalHours;
+                gpa = gpa.toFixed(2)
+                $("#gpaResult").val(gpa);
+                return gpa;
+            }
+            $("#gpaResult").val(0);
+            return 0;
         }
     </script>
     <!-- Sidebar --->
@@ -254,6 +294,7 @@ if ($user == null) {
 
         function newGPA() {
             let semesterCount = 0;
+            gpaForm = null;
             Swal.fire({
                 title: 'New GPA',
                 html: `
@@ -295,6 +336,10 @@ if ($user == null) {
           <h4>Year: ${year}</h4>
           <h4>GPA System Type: ${gpaType}</h4>
           <form id="gpaForm2">
+          <input type="hidden" name="gpaName" value="${gpaName}">
+          <input type="hidden" name="gpaYear" value="${year}">
+          <input type="hidden" name="gpaType" value="${gpaType}">
+
             GPA: <input disabled id="gpaResult" name="gpaResult" placeholder="0.0">
           </form>
           <button type="button" id="addSemesterBtn">Add Semester</button>
@@ -313,7 +358,6 @@ if ($user == null) {
                         const semesterContainer = document.createElement('div');
                         semesterContainer.id = 'semesterContainer';
                         Swal.getHtmlContainer().appendChild(semesterContainer);
-
 
                         addSemesterBtn.addEventListener('click', () => {
                             semesterCount++;
@@ -342,13 +386,13 @@ if ($user == null) {
           <input type="text" class="subjectName" name="subjectName${semesterCount}[]" required>
           <br>
           <label for="marks">Marks:</label>
-          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="recalc();" oninput="updateSubjectRating(this)">
+          <input type="number" class="marks" name="marks${semesterCount}[]" min="0" max="100" required onchange="updateSubjectPoint(this); recalc();" oninput="updateSubjectRating(this); updateSubjectPoint(this); recalc();">
           <br>
           <label for="hours">Hours:</label>
-          <input type="number" class="hours" name="hours${semesterCount}[]" required oninput="recalc(); updateSubjectPoint(this)">
+          <input type="number" class="hours" name="hours${semesterCount}[]" required oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
           <br>
           <label for="grade">Grade:</label>
-          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); recalc(); updateSubjectPoint(this)">
+          <select name="grade${semesterCount}[]" class="grade" required onchange="updateSubjectDegree(this); updateSubjectPoint(this); recalc();">
             <option value="">Select Grade</option>
             <option value="A+">A+</option>
             <option value="A">A</option>
@@ -371,8 +415,6 @@ if ($user == null) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const formData = new FormData(gpaForm);
-                        formData.append('semesterCount', semesterCount);
-                        alert(formData.get('gpaResult'));
                         $.ajax({
                             url: 'gpabackend.php',
                             type: 'POST',
@@ -780,8 +822,8 @@ if ($user == null) {
 
 
     // function recalc() {
-    //     console.log("recalculating......")
-    //     var table = subTable;
+    // console.log("recalculating......")
+    //     var table = document.get;
     //     var totalPoints = 0;
     //     var totalHours = 0;
     //     var totalDegrees = 0;
@@ -863,49 +905,48 @@ if ($user == null) {
 
 
 
-    function reinit() {
-        $('.subjectDegree').on("change keyup", function() {
-            updateSubjectRating(this);
-            updateSubjectPoint(this);
-            recalc();
-        });
+    // function reinit() {
+    //     $('.subjectDegree').on("change keyup", function() {
+    //         updateSubjectRating(this);
+    //         updateSubjectPoint(this);
+    //         recalc();
+    //     });
 
-        $('.subjectRating').on("change keyup", function() {
-            updateSubjectDegree(this);
-            updateSubjectPoint(this);
-            recalc();
-        });
+    //     $('.subjectRating').on("change keyup", function() {
+    //         updateSubjectDegree(this);
+    //         updateSubjectPoint(this);
+    //         recalc();
+    //     });
 
-        $('.subjectHour').on("change keyup", function() {
-            updateSubjectPoint(this);
-            recalc();
-        });
+    //     $('.subjectHour').on("change keyup", function() {
+    //         updateSubjectPoint(this);
+    //         recalc();
+    //     });
 
-        $('input[name="gpaSystem"]').on('change', function() {
-            var selectedGpaSystem = $(this).val();
-            var nonHsElements = $('.non-hs');
-            if (selectedGpaSystem === '100') {
-                nonHsElements.addClass('d-none');
-            } else {
-                nonHsElements.removeClass('d-none');
-            }
-            var table = $("#myTable");
-            table.find("tr").each(function() {
-                var currentRow = $(this);
-                var cell = currentRow.find("td:eq(0)");
-                updateSubjectPoint(cell);
-            })
-            recalc();
-        });
-
-    }
+    //     $('input[name="gpaSystem"]').on('change', function() {
+    //         var selectedGpaSystem = $(this).val();
+    //         var nonHsElements = $('.non-hs');
+    //         if (selectedGpaSystem === '100') {
+    //             nonHsElements.addClass('d-none');
+    //         } else {
+    //             nonHsElements.removeClass('d-none');
+    //         }
+    //         var table = $("#myTable");
+    //         table.find("tr").each(function() {
+    //             var currentRow = $(this);
+    //             var cell = currentRow.find("td:eq(0)");
+    //             updateSubjectPoint(cell);
+    //         })
+    //         recalc();
+    //     });
+    //}
     $(".AddMore").on("click", function() {
         var firstRow = $("#subTable tr:first").clone();
         console.log(firstRow.get(0));
         firstRow.find("input[type=text], input[type=number], select").val("");
         firstRow.find('.subjectPoint').text('');
         $("#subTable").append(firstRow);
-        reinit();
+        // reinit();
     });
     $(".SaveBtn").on("click", function() {
         var button = $(this);
@@ -942,60 +983,60 @@ if ($user == null) {
             }
         });
     });
-    reinit();
+    // reinit();
 
-    $(document).ready(function() {
-        var container = $('.gallery');
+    // $(document).ready(function() {
+    //     var container = $('.gallery');
 
-        $.ajax({
-            type: "POST",
-            data: {
-                getall: true,
-            },
-            url: "gpabackend.php",
-            success: function(data) {
-                data = JSON.parse(data);
-                console.log("PHP page returned GET: ", data);
-                if (data.length === 0) {
-                    $('#load-msg').text('No GPA was added yet.')
-                } else {
-                    $('#load-msg').addClass('d-none');
-                }
-                $.each(data, function(index, item) {
-                    var newGpaCell = container.children('.gpacell:first').clone();
-                    newGpaCell.find('.gpacell-year').text(item.year);
-                    var roundedGpa = parseFloat(item.gpa).toFixed(2);
-                    newGpaCell.find('.gpacell-rate').text(roundedGpa + '/' + item.type);
-                    newGpaCell.find('.item-hours').val(item.hours);
-                    // Set the button value
-                    newGpaCell.find('.gpacell-add').val(item._id.$oid).on('click', function(e) {
-                        CUR_GPA = $(this).val();
-                        var gpacellRate = $(this).closest('.gpacell').find('.gpacell-rate');
-                        var gpaValue = parseFloat(gpacellRate.text().split("/")[1]);
-                        var oldhours = $(this).closest('.gpacell').find('.item-hours').val();
-                        console.log(gpaValue, 'radddd');
-                        $('input[name="gpaSystem"][value="' + gpaValue + '"]').prop("checked", true).trigger('change');
-                        $('.step1').removeClass('d-none');
-                        $('.step2').removeClass('d-none');
-                        $('.non-update').addClass('d-none');
-                        $('.update-only').removeClass('d-none');
-                        $('.modal-title').text('Update GPA');
-                        $('#gpa-old').val(parseFloat(gpacellRate.text().split("/")[0]));
-                        $('#gpa-new').text(parseFloat(gpacellRate.text().split("/")[0]));
-                        $('#hours-old').val(oldhours);
-                    });
+    //     $.ajax({
+    //         type: "POST",
+    //         data: {
+    //             getall: true,
+    //         },
+    //         url: "gpabackend.php",
+    //         success: function(data) {
+    //             data = JSON.parse(data);
+    //             console.log("PHP page returned GET: ", data);
+    //             if (data.length === 0) {
+    //                 $('#load-msg').text('No GPA was added yet.')
+    //             } else {
+    //                 $('#load-msg').addClass('d-none');
+    //             }
+    //             $.each(data, function(index, item) {
+    //                 var newGpaCell = container.children('.gpacell:first').clone();
+    //                 newGpaCell.find('.gpacell-year').text(item.year);
+    //                 var roundedGpa = parseFloat(item.gpa).toFixed(2);
+    //                 newGpaCell.find('.gpacell-rate').text(roundedGpa + '/' + item.type);
+    //                 newGpaCell.find('.item-hours').val(item.hours);
+    //                 // Set the button value
+    //                 newGpaCell.find('.gpacell-add').val(item._id.$oid).on('click', function(e) {
+    //                     CUR_GPA = $(this).val();
+    //                     var gpacellRate = $(this).closest('.gpacell').find('.gpacell-rate');
+    //                     var gpaValue = parseFloat(gpacellRate.text().split("/")[1]);
+    //                     var oldhours = $(this).closest('.gpacell').find('.item-hours').val();
+    //                     console.log(gpaValue, 'radddd');
+    //                     $('input[name="gpaSystem"][value="' + gpaValue + '"]').prop("checked", true).trigger('change');
+    //                     $('.step1').removeClass('d-none');
+    //                     $('.step2').removeClass('d-none');
+    //                     $('.non-update').addClass('d-none');
+    //                     $('.update-only').removeClass('d-none');
+    //                     $('.modal-title').text('Update GPA');
+    //                     $('#gpa-old').val(parseFloat(gpacellRate.text().split("/")[0]));
+    //                     $('#gpa-new').text(parseFloat(gpacellRate.text().split("/")[0]));
+    //                     $('#hours-old').val(oldhours);
+    //                 });
 
-                    // Add the new GPA cell to the container
-                    newGpaCell.removeClass('d-none');
-                    container.append(newGpaCell);
-                });
-            },
-            error: function(e) {
-                console.log("An error occurred while making the AJAX request.");
-                console.log(e);
-            }
-        });
-    })
+    //                 // Add the new GPA cell to the container
+    //                 newGpaCell.removeClass('d-none');
+    //                 container.append(newGpaCell);
+    //             });
+    //         },
+    //         error: function(e) {
+    //             console.log("An error occurred while making the AJAX request.");
+    //             console.log(e);
+    //         }
+    //     });
+    // })
 </script>
 
 </html>
