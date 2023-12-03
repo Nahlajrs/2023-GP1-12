@@ -293,3 +293,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['gpaName'])) {
     }
     getAllGPA($user['_id']);
 }
+
+//DELETE GPA
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['deleteGPA'])) {
+    $id = $_POST['id'];
+    $filter = [
+        '_id' => new MongoDB\BSON\ObjectId($id)
+    ];
+
+    global $client;
+    $collection = $client->selectCollection('Learniverse', 'gpa');
+    // Delete the document
+    $deleteResult = $collection->deleteOne($filter);
+
+    // Check if the deletion was successful
+    if ($deleteResult->getDeletedCount() > 0) {
+        echo 'Document deleted successfully';
+    } else {
+        echo 'Document not found or deletion failed';
+    }
+}

@@ -623,7 +623,7 @@ if ($user == null) {
                     <p class="gpacell-year">2019</p>
                     <h5 class="gpacell-rate">4.53/5</h5>
                     <button class="gpacell-add btn btn-primary btn-xs" value=-1 data-toggle="modal" data-target="#myModal"><i class="fa fa-edit" aria-hidden="true"></i></button>
-                    <button class="gpacell-delete btn btn-primary btn-xs" value=-1 data-toggle="modal" data-target="#myModal"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                    <button class="gpacell-delete btn btn-primary btn-xs" value=-1 data-toggle="modal" data-target="#myModal"><i class="fas fa-trash" aria-hidden="true"></i></button>
                     <input hidden class="item-hours" .val();value=-1 type="number">
                 </div>
             </div>
@@ -1051,7 +1051,43 @@ if ($user == null) {
                     newGpaCell.find('.gpacell-rate').text(roundedGpa + '/' + item.type);
                     newGpaCell.find('.item-hours').val(item.hours);
                     //DELETE GPA
-                    newGpaCell.find('.gpacell-edit').val(item._id.$oid).on('click', function(e) {});
+                    newGpaCell.find('.gpacell-delete').val(item._id.$oid).on('click', function(e) {
+                        Swal.fire({
+                            title: 'Heads Up!',
+                            text: 'Are you sure you want to delete this GPA?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel',
+                        }).then((result) => {
+                            if (result.isConfirmed) { // Check if the user clicked the "Yes, delete it!" button
+                                $.ajax({
+                                    url: 'gpabackend.php',
+                                    method: 'POST',
+                                    data: {
+                                        id: item._id.$oid,
+                                        deleteGPA: true
+                                    },
+                                    success: function(response) {
+                                        // Code to handle the success response
+                                        console.log('Request successful:', response);
+                                        Swal.fire({
+                                            title: 'GPA Deleted',
+                                            text: 'GPA has been deleted successfully.',
+                                            icon: 'success',
+                                            showConfirmButton: false,
+                                            timer: 2000,
+                                        });
+                                        location.reload();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Code to handle the error response
+                                        console.log('Request failed:', error);
+                                    }
+                                });
+                            }
+                        });
+                    });
                     // EDIT GPA
                     newGpaCell.find('.gpacell-add').val(item._id.$oid).on('click', function(e) {
                         //                     alert(console.log(item.semesters[0].));
