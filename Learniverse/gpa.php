@@ -460,7 +460,6 @@ if ($user == null) {
                                 location.reload();
                             },
                             error: function() {
-                                alert("error");
                                 Swal.fire({
                                     title: 'Error',
                                     text: 'An error occurred while saving the GPA.',
@@ -473,10 +472,6 @@ if ($user == null) {
                     }
                 });
             });
-        }
-
-        function editGPA() {
-
         }
     </script>
     <!-- GPA -->
