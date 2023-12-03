@@ -398,7 +398,10 @@ if ($user == null) {
                             gpaForm.appendChild(semesterContainer);
                             const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
                             const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
-
+                            hoursinput = "number";
+                            if (gpaType == 100) {
+                                hoursinput = "hidden";
+                            }
                             addSubjectBtn.addEventListener('click', () => {
                                 subjectCount++;
                                 const subjectDiv = document.createElement('div');
@@ -410,8 +413,8 @@ if ($user == null) {
           <label for="marks">Marks:</label>
           <input type="number" class="marks fill" name="marksSem${semesterCount}Sub${subjectCount}" min="0" max="100" required onchange="updateSubjectPoint(this); recalc();" oninput="updateSubjectRating(this); updateSubjectPoint(this); recalc();">
           <br>
-          <label for="hours">Hours:</label>
-          <input type="number" class="hours fill" name="hoursSem${semesterCount}Sub${subjectCount}" required placeholder="0" oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
+          <label for="hours" style="display:${hoursinput}'>Hours:</label>
+          <input type="${hoursinput}" class="hours fill" name="hoursSem${semesterCount}Sub${subjectCount}" min="0" placeholder="0" oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
           <br>
           <label for="grade">Grade:</label>
           <select name="gradeSem${semesterCount}Sub${subjectCount}" class="grade" required onchange="updateSubjectDegree(this); updateSubjectPoint(this); recalc();">
@@ -434,6 +437,13 @@ if ($user == null) {
                                 subjectContainer.appendChild(subjectDiv);
                             });
                         });
+                    },
+                    preConfirm: () => {
+                        const form = document.getElementById("gpaForm2");
+                        if (!form.checkValidity()) {
+                            Swal.showValidationMessage('All fields are required');
+                            return false; // Return false to prevent the modal from closing
+                        }
                     },
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -617,7 +627,6 @@ if ($user == null) {
                     <p class="gpacell-name">College</p>
                     <p class="gpacell-year">2019</p>
                     <h5 class="gpacell-rate">4.53/5</h5>
-                    <button class="gpacell-add btn btn-primary btn-xs" value=-1 data-toggle="modal" data-target="#myModal"><i class="fa fa-edit" aria-hidden="true"></i></button>
                     <button class="gpacell-delete btn btn-primary btn-xs" value=-1 data-toggle="modal" data-target="#myModal"><i class="fas fa-trash" aria-hidden="true"></i></button>
                     <input hidden class="item-hours" .val();value=-1 type="number">
                 </div>
@@ -1017,10 +1026,7 @@ if ($user == null) {
     //     });
     // });
     // reinit();
-    $(".gpacell-add").on("click", function() {
-        alert("Word");
-    });
-
+  
     $(document).ready(function() {
         var container = $('.gallery');
 
@@ -1084,94 +1090,6 @@ if ($user == null) {
                         });
                     });
                     // EDIT GPA
-                    newGpaCell.find('.gpacell-add').val(item._id.$oid).on('click', function(e) {
-                        //                     alert(console.log(item.semesters[0].));
-                        //                     semesterCount = 0;
-                        //                     displayHtml = `
-                        //             <h3>GPA Name: </h3><br><br>
-                        //       <b>Year: </b><br><br>
-                        //       <b>GPA System Type: </b><br><br>
-                        //       <form id="gpaForm2">
-                        //       <input type="hidden" name="gpaName" value="">
-                        //       <input type="hidden" name="gpaYear" value="">
-                        //       <input type="hidden" name="gpaType" value="">
-                        //       <span> <b>Previous GPA:</b> <input disabled id="prevGPA" name="prevGPA" placeholder="0.0"></span> 
-                        //       <span> <b>Current GPA:</b> <input disabled id="currGPA" name="currGPA" placeholder="0.0"></span> 
-                        //       </form>
-                        //       <button type="button" id="addSemesterBtn">Add Semester</button>
-                        //     `;
-
-                        //                     Swal.fire({
-                        //                         title: 'Edit GPA',
-                        //                         html: displayHtml,
-                        //                         showConfirmButton: true,
-                        //                         showCancelButton: true,
-                        //                         cancelButtonText: 'Close',
-                        //                         confirmButtonText: 'Save',
-                        //                         didOpen: () => {
-                        //                             gpaForm = document.getElementById('gpaForm2');
-                        //                             const addSemesterBtn = document.getElementById('addSemesterBtn');
-                        //                             const semesterContainer = document.createElement('div');
-                        //                             semesterContainer.id = 'semesterContainer';
-                        //                             Swal.getHtmlContainer().appendChild(semesterContainer);
-
-                        //                             addSemesterBtn.addEventListener('click', () => {
-                        //                                 semesterCount++;
-                        //                                 subjectCount = 0;
-                        //                                 const semesterDiv = document.createElement('div');
-                        //                                 semesterDiv.classList.add('semester');
-                        //                                 semesterDiv.innerHTML = `
-                        //     <h3>Semester ${semesterCount}</h3>
-                        //     <br>
-                        //     <div class="subjectContainer" id="subjectContainer${semesterCount}"></div>
-                        //     <button type="button" class="addSubjectBtn" data-semester="${semesterCount}">
-                        //       Add Subject
-                        //     </button>
-                        //     <br><br>
-                        //   `;
-                        //                                 semesterContainer.appendChild(semesterDiv);
-                        //                                 gpaForm.appendChild(semesterContainer);
-                        //                                 const subjectContainer = document.getElementById(`subjectContainer${semesterCount}`);
-                        //                                 const addSubjectBtn = document.querySelector(`[data-semester="${semesterCount}"]`);
-
-                        //                                 addSubjectBtn.addEventListener('click', () => {
-                        //                                     subjectCount++;
-                        //                                     const subjectDiv = document.createElement('div');
-                        //                                     subjectDiv.classList.add('subject');
-                        //                                     subjectDiv.innerHTML = `
-                        //       <label for="subjectName">Subject Name:</label>
-                        //       <input type="text" class="subjectName fill" name="subjectNameSem${semesterCount}Sub${subjectCount}" required>
-                        //       <br>
-                        //       <label for="marks">Marks:</label>
-                        //       <input type="number" class="marks fill" name="marksSem${semesterCount}Sub${subjectCount}" min="0" max="100" required onchange="updateSubjectPoint(this); recalc();" oninput="updateSubjectRating(this); updateSubjectPoint(this); recalc();">
-                        //       <br>
-                        //       <label for="hours">Hours:</label>
-                        //       <input type="number" class="hours fill" name="hoursSem${semesterCount}Sub${subjectCount}" required placeholder="0" oninput="updateSubjectPoint(this); recalc();" onchange="updateSubjectPoint(this); recalc();">
-                        //       <br>
-                        //       <label for="grade">Grade:</label>
-                        //       <select name="gradeSem${semesterCount}Sub${subjectCount}" class="grade" required onchange="updateSubjectDegree(this); updateSubjectPoint(this); recalc();">
-                        //         <option value="">Select Grade</option>
-                        //         <option value="A+">A+</option>
-                        //         <option value="A">A</option>
-                        //         <option value="B+">B+</option>
-                        //         <option value="B">B</option>
-                        //         <option value="C+">C+</option>
-                        //         <option value="C">C</option>
-                        //         <option value="D+">D+</option>
-                        //         <option value="D">D</option>
-                        //         <option value="F">F</option>
-                        //       </select>
-                        //       <br>
-                        //       <label for="points fill">Points: </label>
-                        //       <input disabled name="pointSem${semesterCount}Sub${subjectCount}" class="points fill" placeholder="0.0">
-                        //       <input type="hidden" name="pointsSem${semesterCount}Sub${subjectCount}" class="point">
-                        //       `;
-                        //                                     subjectContainer.appendChild(subjectDiv);
-                        //                                 });
-                        //                             });
-                        //                         },
-                        //                     });
-                    });
                     //     CUR_GPA = $(this).val();
                     //     var gpacellRate = $(this).closest('.gpacell').find('.gpacell-rate');
                     //     var gpaValue = parseFloat(gpacellRate.text().split("/")[1]);
